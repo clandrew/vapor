@@ -1,0 +1,1 @@
+Renaming dxc- so that Visual Studio can natively work with HLSL files and still compile them to SM 6.1
