@@ -2,3 +2,4 @@
 VaporPlus/bin/x64/Debug/*
 VaporPlus/bin/x64/Release/*
 VaporPlus/obj/*
+tools/x64/*
