@@ -228,7 +228,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 	}
 	else if(materialIndex == STATUE_MATERIAL)
 	{
-		sampled = float4(0.7f, 0.7f, 0.65f, 1.0f);
+		sampled = float4(0.8f, 0.8f, 0.75f, 1.0f);
 
 		float3 reflectedLightRay = normalize(reflect(incidentLightRay, triangleNormal));
 		float specularPower = 20;

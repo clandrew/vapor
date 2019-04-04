@@ -647,8 +647,10 @@ void VaporPlus::BuildGeometry()
 	std::vector<Index> indices;
 
 	{
-		XMVECTOR yAxis = { 0, 1, 0 };		
-		XMMATRIX transform = XMMatrixRotationAxis(yAxis, 180.0f - 45.0f) * XMMatrixTranslation(-1, 0, 0);
+		XMVECTOR xAxis = { 1, 0, 0 };
+		XMVECTOR yAxis = { 0, 1, 0 };
+		XMVECTOR zAxis = { 0, 0, 1 };
+		XMMATRIX transform = XMMatrixRotationAxis(xAxis, 3.14159f / 2.0f) * XMMatrixRotationAxis(yAxis, 3.14159f / 12.0f) * XMMatrixRotationAxis(zAxis, 3.14159f) * XMMatrixTranslation(-1.5f, 0, 0);
 		m_helios.LoadObjMesh(
 			"Plane001", 
 			0.007f, 
