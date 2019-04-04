@@ -42,7 +42,12 @@ void ObjLoader::Load(wchar_t const* fileName)
 		}
 		else if (line[0] == 'f' && line[1] == ' ')
 		{
-			if (line.find("//") != -1)
+			size_t delim1 = line.find('/');
+			size_t delim2 = line.find('/', delim1);
+
+			bool useNormals = delim1 != -1;
+
+			if (useNormals)
 			{
 				// Face info includes normals
 				std::string tokens[3];
@@ -50,11 +55,11 @@ void ObjLoader::Load(wchar_t const* fileName)
 				stringStream >> tokens[0] >> tokens[1] >> tokens[2];
 
 				XMUINT2 vertexAndNormal[3];
-				for(int i=0; i<3; ++i)
+				for (int i = 0; i<3; ++i)
 					vertexAndNormal[i] = GetVertexAndNormalIndex(tokens[i]);
 
 				Object::ThreeIndices vertexIndices;
-				for(int i=0; i<3; ++i)
+				for (int i = 0; i<3; ++i)
 					vertexIndices.Values[i] = vertexAndNormal[i].x;
 
 				Object::ThreeIndices normalIndices;
@@ -100,17 +105,18 @@ ObjLoader::Object* ObjLoader::GetOrCreateObject(std::string const& name)
 
 XMUINT2 ObjLoader::GetVertexAndNormalIndex(std::string const& token)
 {
-	XMUINT2 result;
+	XMUINT2 result{};
 
-	std::string delimiter = "//";
-	size_t delimiterPosition = token.find(delimiter);
+	size_t delimiterPosition1 = token.find('/');
+	size_t delimiterPosition2 = token.find('/', delimiterPosition1 + 1);
+	size_t delimiterLength = 1;
 
 	{
-		std::stringstream substring(token.substr(0, delimiterPosition));
+		std::stringstream substring(token.substr(0, delimiterPosition1));
 		substring >> result.x;
 	}
 	{
-		std::stringstream substring(token.substr(delimiterPosition + delimiter.length()));
+		std::stringstream substring(token.substr(delimiterPosition2 + delimiterLength));
 		substring >> result.y;
 	}
 
@@ -140,9 +146,12 @@ void ObjLoader::GetObjectVerticesAndIndices(
 			v.position.z *= scale; // Shrink
 
 			// Get that vertex's normal
-			uint32_t normalIndex = obj->m_faces[faceIndex].NormalIndices.Values[vertexIndex] - 1;
-			XMFLOAT3 n = obj->m_normals[normalIndex];
-			v.normal = n;
+			if (obj->m_faces[faceIndex].UseNormals)
+			{
+				uint32_t normalIndex = obj->m_faces[faceIndex].NormalIndices.Values[vertexIndex] - 1;
+				XMFLOAT3 n = obj->m_normals[normalIndex];
+				v.normal = n;
+			}
 
 			// (No UV)
 			v.uv.x = 0.5f;
