@@ -1,5 +1,5 @@
 # VaporPlus
-This is a DirectX Raytracing app for testing and reference purposes. It's loosely based off of the D3D12SimpleLighting sample, and has been tested using the raytracing fallback layer.
+This is a DirectX Raytracing app for testing and reference purposes. It's loosely based off of the D3D12SimpleLighting sample, and has been tested using the raytracing fallback layer on RS5, i.e., Windows 10 October 2018 Update.
 
 Includes:
 * Mesh and simple mesh loader
