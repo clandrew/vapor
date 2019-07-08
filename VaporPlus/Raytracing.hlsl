@@ -26,7 +26,7 @@ Texture2D<float4> TextTexture : register(t5, space0);
 SamplerState TextureSampler : register(s0);
 
 ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
-ConstantBuffer<CubeConstantBuffer> g_perGeometryCB : register(b1);
+ConstantBuffer<PerGeometryConstantBuffer> g_perGeometryCB : register(b1);
 
 // Load three 16 bit indices from a byte addressed buffer.
 uint3 Load3x16BitIndices(uint offsetBytes)
@@ -64,7 +64,6 @@ typedef BuiltInTriangleIntersectionAttributes MyAttributes;
 struct RayPayload
 {
     float4 color;
-	uint recursionDepth;
 };
 struct ShadowRayPayload
 {
@@ -108,7 +107,7 @@ float4 CalculateDiffuseLighting(float3 incidentLightRay, float3 normal, float4 d
 	float3 hitToLight = normalize(-incidentLightRay);
 	float fNDotL = saturate(dot(hitToLight, normal));
 
-    return g_perGeometryCB.albedo * diffuseColor * fNDotL;
+	return g_perGeometryCB.albedo * diffuseColor * fNDotL;
 }
 
 [shader("raygeneration")]
@@ -129,16 +128,27 @@ void MyRaygenShader()
     // TMin should be kept small to prevent missing geometry at close contact areas.
     ray.TMin = 0.001;
     ray.TMax = 10000.0;
-    RayPayload payload = { float4(0, 0, 0, 0), 0 };
-    TraceRay(
-		Scene,  // AS
-		RAY_FLAG_CULL_BACK_FACING_TRIANGLES, // Flags
-		~0, // Mask
-		0, // Hit group offset
-		2, // Hit group instance multiplier. Note that this sample uses instancing
+    RayPayload payload = { float4(0, 0, 0, 0) };
+    TraceRay(Scene, RAY_FLAG_CULL_BACK_FACING_TRIANGLES, 
+		~0,  // InstanceInclusionMask
+		0, // RayContributionToHitGroupIndex
+		2, // MultiplierForGeometryContributionToHitGroupIndex,
 		0, // Miss shader index
 		ray, 
 		payload);
+
+	/*
+	HitGroupRecordAddress = 
+		D3D12_DISPATCH_RAYS_DESC.HitGroupTable.StartAddress + D3D12_DISPATCH_RAYS_DESC.HitGroupTable.StrideInBytes *
+			(RayContributionToHitGroupIndex + (MultiplierForGeometryContributionToHitGroupIndex * GeometryContributionToHitGroupIndex) 
+			+ D3D12_RAYTRACING_INSTANCE_DESC.InstanceContributionToHitGroupIndex);
+
+	hitGroupIndex = 
+		RayContributionToHitGroupIndex + 
+		(MultiplierForGeometryContributionToHitGroupIndex * GeometryContributionToHitGroupIndex) + 
+		D3D12_RAYTRACING_INSTANCE_DESC.InstanceContributionToHitGroupIndex);
+
+	*/
 
     // Write the raytraced color to the output texture.
     RenderTarget[DispatchRaysIndex().xy] = payload.color;
@@ -154,7 +164,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
     uint indicesPerTriangle = 3;
     uint triangleIndexStride = indicesPerTriangle * indexSizeInBytes;
 	uint baseIndex = g_perGeometryCB.indexBufferOffset + (PrimitiveIndex() * triangleIndexStride);
-	
+
     // Load up 3 16 bit indices for the triangle.
     const uint3 indices = Load3x16BitIndices(baseIndex);
 
@@ -164,16 +174,16 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
         Vertices[indices[1]].normal, 
         Vertices[indices[2]].normal 
     };
+
+    // Compute the triangle's normal.
+    // This is redundant and done for illustration purposes 
+    // as all the per-vertex normals are the same and match triangle's normal in this sample. 
 	float3 triangleNormal = HitAttribute(vertexNormals, attr);
 	triangleNormal = mul(triangleNormal, (float3x3)g_sceneCB.perGeometryTransform[g_perGeometryCB.geometryID]);
 	triangleNormal = normalize(mul((float3x3)ObjectToWorld(), triangleNormal));
 
-	float4 reflectionColor = float4(1, 1, 1, 1);
-	
 	float4 shadow = float4(1, 1, 1, 1);
-	float4 reflection = float4(0, 0, 0, 0);
-
-
+	
 	{
 		ShadowRayPayload shadowPayload = { true }; // There's a miss shader to set this to false.
 
@@ -183,15 +193,15 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 		rayDesc.Direction = normalize(g_sceneCB.lightPosition.xyz - hitPosition);
 		rayDesc.TMin = 0.001;
 		rayDesc.TMax = 10000.0;
-
+		
 		TraceRay(Scene,
 			RAY_FLAG_CULL_BACK_FACING_TRIANGLES
 			| RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH
 			| RAY_FLAG_FORCE_OPAQUE
-			| RAY_FLAG_SKIP_CLOSEST_HIT_SHADER,
+			| RAY_FLAG_SKIP_CLOSEST_HIT_SHADER, // We're not running closest hit
 			~0, // Mask
 			1, // RayContributionToHitGroupIndex,
-			0, // MultiplierForGeometryContributionToHitGroupIndex, // We're not running closest hit anyhow.
+			0, // MultiplierForGeometryContributionToHitGroupIndex, 
 			1, // Miss shader index
 			rayDesc,
 			shadowPayload);
@@ -201,7 +211,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 			shadow = float4(0.8f, 0.7f, 0.7f, 1.0f);
 		}
 	}
-
+	
 	float3 uvs[3] = {
 		Vertices[indices[0]].uv,
 		Vertices[indices[1]].uv,
@@ -217,7 +227,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 	float4 diffuseScale = float4(1, 1, 1, 1);
 	float4 specularColor = float4(0, 0, 0, 0);
 	float4 lightMaxing = float4(0, 0, 0, 0);
-
+	
 	if (materialIndex == CHECKERBOARD_FLOOR_MATERIAL)
 	{
 		float2 dispUV = uv.xy;
@@ -226,7 +236,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 		sampled = CheckerboardTexture.SampleLevel(TextureSampler, dispUV, 0);
 		lightMaxing = float4(1, 1, 1, 1);
 	}
-	else if(materialIndex == STATUE_MATERIAL)
+	else if (materialIndex == STATUE_MATERIAL)
 	{
 		sampled = float4(0.8f, 0.8f, 0.75f, 1.0f);
 
@@ -235,7 +245,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 		float4 specularCoefficient = pow(saturate(dot(reflectedLightRay, normalize(-WorldRayDirection()))), specularPower) * 0.5f;
 		specularColor = specularCoefficient;
 	}
-	else if(materialIndex == CITYSCAPE_MATERIAL)
+	else if (materialIndex == CITYSCAPE_MATERIAL)
 	{
 		sampled = CityscapeTexture.SampleLevel(TextureSampler, uv.xy, 0);
 	}
@@ -254,8 +264,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 	float4 lightColor = g_sceneCB.lightAmbientColor + diffuseColor + specularColor;
 	lightColor = max(lightColor, lightMaxing);
 
-	float4 finalColor = lightColor * sampled * shadow * reflectionColor;
-	finalColor += float4(0, 0, 0, 0);
+	float4 finalColor = lightColor * sampled * shadow;
 
 	payload.color = finalColor;
 }
@@ -263,21 +272,14 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 [shader("miss")]
 void MyMissShader(inout RayPayload payload)
 {
-    float4 background = float4(1.0f, 0.51, 0.61f, 1.0f);
-    payload.color = background;
+	float4 pank = float4(1.0f, 0.51, 0.61f, 1.0f);
+    payload.color = pank;
 }
 
 [shader("miss")]
 void MyMissShader_ShadowRay(inout ShadowRayPayload shadowPayload)
 {
 	shadowPayload.hit = false;
-}
-
-[shader("miss")]
-void MyMissShader_Reflection(inout RayPayload payload)
-{
-	float4 background = float4(1.0f, 1.0f, 1.0f, 1.0f);
-	payload.color = background;
 }
 
 #endif // RAYTRACING_HLSL

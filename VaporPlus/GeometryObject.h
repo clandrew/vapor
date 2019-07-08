@@ -37,9 +37,9 @@ public:
 		float yTranslate,
 		float zTranslate,
 		float uvScale,
-		DX::DeviceResources* deviceResources, 
-		UINT descriptorSize, 
-		std::vector<Vertex>* floorVertices,	
+		DX::DeviceResources* deviceResources,
+		UINT descriptorSize,
+		std::vector<Vertex>* floorVertices,
 		std::vector<Index>* indices);
 
 	void LoadObjMesh(
@@ -51,7 +51,7 @@ public:
 		XMMATRIX transform,
 		std::vector<Vertex>* floorVertices,
 		std::vector<Index>* indices);
-	
+
 	D3D12_RAYTRACING_GEOMETRY_DESC GetRaytracingGeometryDesc(D3DBuffer* vertexBuffer, D3DBuffer* indexBuffer);
 
 	TextureIdentifier GetTextureIdentifier() const
@@ -86,4 +86,4 @@ public:
 
 private:
 	void CreateTransformBuffer(DX::DeviceResources* deviceResources, XMMATRIX transform);
-};
+}; 

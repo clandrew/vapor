@@ -2,6 +2,8 @@
 #include "DeviceResources.h"
 #include "Win32Application.h"
 
+using namespace DX;
+
 using Microsoft::WRL::ComPtr;
 
 namespace
@@ -19,7 +21,7 @@ namespace
 };
 
 // Constructor for DeviceResources.
-DX::DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount, D3D_FEATURE_LEVEL minFeatureLevel, UINT flags, UINT adapterIDoverride) :
+DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount, D3D_FEATURE_LEVEL minFeatureLevel, UINT flags, UINT adapterIDoverride) :
     m_backBufferIndex(0),
     m_fenceValues{},
     m_rtvDescriptorSize(0),
@@ -54,14 +56,14 @@ DX::DeviceResources::DeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT d
 }
 
 // Destructor for DeviceResources.
-DX::DeviceResources::~DeviceResources()
+DeviceResources::~DeviceResources()
 {
     // Ensure that the GPU is no longer referencing resources that are about to be destroyed.
     WaitForGpu();
 }
 
 // Configures DXGI Factory and retrieve an adapter.
-void DX::DeviceResources::InitializeDXGIAdapter()
+void DeviceResources::InitializeDXGIAdapter()
 {
     bool debugDXGI = false;
 
@@ -124,7 +126,7 @@ void DX::DeviceResources::InitializeDXGIAdapter()
 }
 
 // Configures the Direct3D device, and stores handles to it and the device context.
-void DX::DeviceResources::CreateDeviceResources()
+void DeviceResources::CreateDeviceResources()
 {
     // Create the DX12 API device object.
     ThrowIfFailed(D3D12CreateDevice(m_adapter.Get(), m_d3dMinFeatureLevel, IID_PPV_ARGS(&m_d3dDevice)));
@@ -141,7 +143,9 @@ void DX::DeviceResources::CreateDeviceResources()
         D3D12_MESSAGE_ID hide[] =
         {
             D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
-            D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE
+            D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
+			D3D12_MESSAGE_ID_REFLECTSHAREDPROPERTIES_INVALIDOBJECT, // some annoying bug with 11on12
+			D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
         };
         D3D12_INFO_QUEUE_FILTER filter = {};
         filter.DenyList.NumIDs = _countof(hide);
@@ -221,7 +225,7 @@ void DX::DeviceResources::CreateDeviceResources()
 }
 
 // These resources need to be recreated every time the window size is changed.
-void DX::DeviceResources::CreateWindowSizeDependentResources()
+void DeviceResources::CreateWindowSizeDependentResources()
 {
     if (!m_window)
     {
@@ -392,7 +396,7 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 }
 
 // This method is called when the Win32 window is created (or re-created).
-void DX::DeviceResources::SetWindow(HWND window, int width, int height)
+void DeviceResources::SetWindow(HWND window, int width, int height)
 {
     m_window = window;
 
@@ -403,7 +407,7 @@ void DX::DeviceResources::SetWindow(HWND window, int width, int height)
 
 // This method is called when the Win32 window changes size.
 // It returns true if window size change was applied.
-bool DX::DeviceResources::WindowSizeChanged(int width, int height, bool minimized)
+bool DeviceResources::WindowSizeChanged(int width, int height, bool minimized)
 {
     m_isWindowVisible = !minimized;
 
@@ -430,7 +434,7 @@ bool DX::DeviceResources::WindowSizeChanged(int width, int height, bool minimize
 }
 
 // Recreate all device resources and set them back to the current state.
-void DX::DeviceResources::HandleDeviceLost()
+void DeviceResources::HandleDeviceLost()
 {
     if (m_deviceNotify)
     {
@@ -482,9 +486,11 @@ void DX::DeviceResources::PrepareOffscreen()
 }
 
 // Prepare the command list and render target for rendering.
-void DX::DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState)
+void DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState)
 {
-	PrepareOffscreen();
+    // Reset command list and allocator.
+    ThrowIfFailed(m_commandAllocators[m_backBufferIndex]->Reset());
+    ThrowIfFailed(m_commandList->Reset(m_commandAllocators[m_backBufferIndex].Get(), nullptr));
 
     if (beforeState != D3D12_RESOURCE_STATE_RENDER_TARGET)
     {
@@ -495,7 +501,7 @@ void DX::DeviceResources::Prepare(D3D12_RESOURCE_STATES beforeState)
 }
 
 // Present the contents of the swap chain to the screen.
-void DX::DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
+void DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
 {
     if (beforeState != D3D12_RESOURCE_STATE_PRESENT)
     {
@@ -540,7 +546,7 @@ void DX::DeviceResources::Present(D3D12_RESOURCE_STATES beforeState)
 }
 
 // Send the command list off to the GPU for processing.
-void DX::DeviceResources::ExecuteCommandList()
+void DeviceResources::ExecuteCommandList()
 {
     ThrowIfFailed(m_commandList->Close());
     ID3D12CommandList *commandLists[] = { m_commandList.Get() }; 
@@ -548,7 +554,7 @@ void DX::DeviceResources::ExecuteCommandList()
 }
 
 // Wait for pending GPU work to complete.
-void DX::DeviceResources::WaitForGpu() noexcept
+void DeviceResources::WaitForGpu() noexcept
 {
     if (m_commandQueue && m_fence && m_fenceEvent.IsValid())
     {
@@ -569,7 +575,7 @@ void DX::DeviceResources::WaitForGpu() noexcept
 }
 
 // Prepare to render the next frame.
-void DX::DeviceResources::MoveToNextFrame()
+void DeviceResources::MoveToNextFrame()
 {
     // Schedule a Signal command in the queue.
     const UINT64 currentFenceValue = m_fenceValues[m_backBufferIndex];
@@ -591,7 +597,7 @@ void DX::DeviceResources::MoveToNextFrame()
 
 // This method acquires the first available hardware adapter that supports Direct3D 12.
 // If no such adapter can be found, try WARP. Otherwise throw an exception.
-void DX::DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter)
+void DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter)
 {
     *ppAdapter = nullptr;
 
@@ -652,4 +658,22 @@ void DX::DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter)
     }
     
     *ppAdapter = adapter.Detach();
+}
+
+void SerializeAndCreateRootSignature(ID3D12Device5* device, D3D12_ROOT_SIGNATURE_DESC& desc, ComPtr<ID3D12RootSignature>* rootSig)
+{
+	ComPtr<ID3DBlob> blob;
+	ComPtr<ID3DBlob> error;
+
+	HRESULT hr = D3D12SerializeRootSignature(&desc, D3D_ROOT_SIGNATURE_VERSION_1, &blob, &error);
+	if (FAILED(hr))
+	{
+		if (error)
+		{
+			OutputDebugStringA(static_cast<char* const>(error->GetBufferPointer()));
+		}
+		ThrowIfFailed(hr);
+	}
+
+	ThrowIfFailed(device->CreateRootSignature(1, blob->GetBufferPointer(), blob->GetBufferSize(), IID_PPV_ARGS(&(*rootSig))));
 }

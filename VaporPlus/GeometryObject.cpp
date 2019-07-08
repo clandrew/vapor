@@ -22,8 +22,8 @@ void GeometryObject::LoadCube(
 	float yTranslate,
 	float zTranslate,
 	float uvScale,
-	DX::DeviceResources* deviceResources, 
-	UINT descriptorSize, 
+	DX::DeviceResources* deviceResources,
+	UINT descriptorSize,
 	std::vector<Vertex>* vertices,
 	std::vector<Index>* indices)
 {
@@ -40,19 +40,19 @@ void GeometryObject::LoadCube(
 
 	assert(m_indexBufferOffset % 6 == 0); // Three two-byte indices should be written at a time
 
-	CreateTransformBuffer(deviceResources, m_baseTransform);	
+	CreateTransformBuffer(deviceResources, m_baseTransform);
 }
 
 
 void GeometryObject::LoadObjMesh(
 	std::string name,
 	float scale,
-	ObjLoader* loader,
-	DX::DeviceResources* deviceResources,
+	ObjLoader * loader,
+	DX::DeviceResources * deviceResources,
 	UINT descriptorSize,
 	XMMATRIX transform,
-	std::vector<Vertex>* vertices,
-	std::vector<Index>* indices)
+	std::vector<Vertex> * vertices,
+	std::vector<Index> * indices)
 {
 	size_t vertexBaseline = vertices->size();
 	size_t indexBaseline = indices->size();
@@ -92,7 +92,7 @@ static Matrix3x4 ToMatrix3x4(XMMATRIX const& transform)
 	return transformBuffer;
 }
 
-void GeometryObject::CreateTransformBuffer(DX::DeviceResources* deviceResources, XMMATRIX transform)
+void GeometryObject::CreateTransformBuffer(DX::DeviceResources * deviceResources, XMMATRIX transform)
 {
 	Matrix3x4 transformBuffer = {};
 	size_t requiredBufferSize = sizeof(transformBuffer.m);
@@ -103,7 +103,7 @@ void GeometryObject::CreateTransformBuffer(DX::DeviceResources* deviceResources,
 	ThrowIfFailed(deviceResources->GetD3DDevice()->CreateCommittedResource(
 		&defaultHeapProperties, D3D12_HEAP_FLAG_NONE, &transformTextureDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&m_transformBuffer)));
 	NAME_D3D12_OBJECT(m_transformBuffer);
-	
+
 	const UINT64 uploadBufferSize = GetRequiredIntermediateSize(m_transformBuffer.Get(), 0, 1);
 
 	// Create the GPU upload buffer.
@@ -130,7 +130,7 @@ void GeometryObject::CreateTransformBuffer(DX::DeviceResources* deviceResources,
 	deviceResources->WaitForGpu();
 }
 
-void GeometryObject::UpdateFloatyTransform(DX::DeviceResources* deviceResources)
+void GeometryObject::UpdateFloatyTransform(DX::DeviceResources * deviceResources)
 {
 	m_floatAnimationCounter = (m_floatAnimationCounter + 1) % 1000;
 	float twoPi = 3.14159f * 2;
@@ -156,10 +156,10 @@ XMMATRIX GeometryObject::GetTransform() const
 	return m_netTransform;
 }
 
-void GeometryObject::UpdateTransform(DX::DeviceResources* deviceResources, XMMATRIX const& transform)
+void GeometryObject::UpdateTransform(DX::DeviceResources * deviceResources, XMMATRIX const& transform)
 {
 	deviceResources->GetCommandList()->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-		m_transformBuffer.Get(), 
+		m_transformBuffer.Get(),
 		D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, // State changed after BLAS build
 		D3D12_RESOURCE_STATE_COPY_DEST));
 
@@ -170,12 +170,12 @@ void GeometryObject::UpdateTransform(DX::DeviceResources* deviceResources, XMMAT
 	UpdateSubresources(deviceResources->GetCommandList(), m_transformBuffer.Get(), m_transformResourceUploadHeap.Get(), 0, 0, 1, &textureData);
 
 	deviceResources->GetCommandList()->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(
-		m_transformBuffer.Get(), 
-		D3D12_RESOURCE_STATE_COPY_DEST, 
+		m_transformBuffer.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST,
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 }
 
-D3D12_RAYTRACING_GEOMETRY_DESC GeometryObject::GetRaytracingGeometryDesc(D3DBuffer* vertexBuffer, D3DBuffer* indexBuffer)
+D3D12_RAYTRACING_GEOMETRY_DESC GeometryObject::GetRaytracingGeometryDesc(D3DBuffer * vertexBuffer, D3DBuffer * indexBuffer)
 {
 	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;

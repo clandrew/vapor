@@ -18,21 +18,20 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include <string>
-#include <fstream>
 #include <atlbase.h>
 #include <assert.h>
+#include <fstream>
 
 #include <dxgi1_6.h>
-#include "d3d12_1.h"
-#include <Mmsystem.h>
-#include "D3D12RaytracingFallback.h"
-#include "D3D12RaytracingHelpers.hpp"
-#include "d3dx12.h"
-#include <wincodec.h>
+#include <d3d11_4.h>
+#include "d3d12.h"
 #include <d3d11on12.h>
 #include <d2d1_3.h>
 #include <dwrite.h>
+#include <wincodec.h>
+#include <atlbase.h>
+#include "D3D12RaytracingHelpers.hpp"
+#include "d3dx12.h"
 
 #include <DirectXMath.h>
 
@@ -42,3 +41,4 @@
 
 #include "DXSampleHelper.h"
 #include "DeviceResources.h"
+

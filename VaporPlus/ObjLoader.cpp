@@ -236,19 +236,10 @@ void ObjLoader::GetCubeVerticesAndIndices(
         { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f) , XMFLOAT3(0, 0, 0.0f) },   // Upper left
 
 		// Back
-        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(0, 0, 0.0f) },  // 20, upper right
-        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(0, 0, 0.0f) },    // 21, upper left
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(uv, uv, 0.0f) },  // 20, upper right
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(0, uv, 0.0f) },    // 21, upper left
         { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(0, 0, 0.0f) },      // 22, lower left
-        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(0, 0, 0.0f) },    // 23
-
-		/*
-		
-        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) },
-		
-		*/
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(uv, 0, 0.0f) },    // 23
     };
 
 	Index indexBaseline = CheckCastIndex(vertices->size());
