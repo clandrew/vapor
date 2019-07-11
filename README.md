@@ -10,7 +10,7 @@ Includes:
 
 ## Build
 The project is built against a snapshot of the fallback layer SDK, packaged with this project.
-This is organized as a C++ solution built using Microsoft Visual Studio 2017 version 15.7.5.
+This is organized as a C++ solution built using Microsoft Visual Studio 2019 version 16.0.4.
 
 ## Key reference
 * A - Spin the geometry
