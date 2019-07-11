@@ -6,6 +6,8 @@ Includes:
 * Optional post-process effect
 * Direct2D+DirectWrite+Direct3D interop, drawing text onto a textured object
 
+![Example image](https://raw.githubusercontent.com/clandrew/vapor/master/Images/Default.gif "Example image")
+
 ## Build
 The project is built against a snapshot of the fallback layer SDK, packaged with this project.
 This is organized as a C++ solution built using Microsoft Visual Studio 2017 version 15.7.5.
@@ -21,5 +23,3 @@ The sample has been tested on NVIDIA GeForce RTX 2080, and NVIDIA GeForce GTX 10
 
 ## Earlier FL support
 Earlier versions of this proejct worked against a snapshot of the fallback layer SDK, packaged with the project. These earlier versions are commit [5c60013](https://github.com/clandrew/vapor/commit/5c600131c5633cd7eb85a31c3b14c5730a89ad90) and earlier.
-
-![Example image](https://raw.githubusercontent.com/clandrew/vapor/master/Images/Default.gif "Example image")
