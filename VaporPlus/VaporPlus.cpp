@@ -68,8 +68,8 @@ void VaporPlus::UpdateCameraMatrices()
 	m_sceneCB[frameIndex].perGeometryTransform[2] = m_cityscape.GetTransform();
 	m_sceneCB[frameIndex].perGeometryTransform[3] = m_text.GetTransform();
 
-	static const float floorAnimationXIncrement = 0.01f / 8.0f;
-	static const float floorAnimationYIncrement = 0.01f;
+	static const float floorAnimationXIncrement = 0.01f / 32.0f;
+	static const float floorAnimationYIncrement = 0.01f / 4.0f;
 
 	m_sceneCB[frameIndex].floorUVDisp.x = m_floorTextureOffsetX;
 	m_sceneCB[frameIndex].floorUVDisp.y = m_floorTextureOffsetY;
