@@ -534,8 +534,6 @@ void VaporPlus::UpdateBottomLevelAccelerationStructure()
 		D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS prebuildInputs = bottomLevelBuildDesc.Inputs;
 		prebuildInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_ALLOW_UPDATE;
 		m_dxrDevice->GetRaytracingAccelerationStructurePrebuildInfo(&prebuildInputs, &prebuildInfo);
-		assert(prebuildInfo.ResultDataMaxSizeInBytes <= 414784);
-		assert(prebuildInfo.UpdateScratchDataSizeInBytes <= 195456);
 	}
 
 	bottomLevelBuildDesc.SourceAccelerationStructureData = m_bottomLevelAccelerationStructure->GetGPUVirtualAddress();
