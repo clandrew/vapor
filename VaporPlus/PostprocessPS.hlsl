@@ -137,7 +137,15 @@ float4 PSMain(PSInput input) : SV_TARGET
 
 	if (myDrawConstants.enablePostProcess == 0)
 	{
-		fragColor = g_inputTexture.Sample(g_sampler, float2(uv));
+		
+		float4 src = g_inputTexture.Sample(g_sampler, float2(uv));
+		float depth = src.a;
+		float disp = depth * 0.01f;
+
+		float4 leftColor = g_inputTexture.Sample(g_sampler, float2(uv.x - disp, uv.y));
+		float4 rightColor = g_inputTexture.Sample(g_sampler, float2(uv.x + disp, uv.y));
+
+		fragColor = float4(rightColor.r, leftColor.g, leftColor.b, 1);
 	}
 	else
 	{

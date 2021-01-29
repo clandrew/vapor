@@ -158,6 +158,7 @@ void MyRaygenShader()
 void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 {
     float3 hitPosition = HitWorldPosition();
+	float depth = hitPosition.z;
 
     // Get the base index of the triangle's first 16 bit index.
     uint indexSizeInBytes = 2;
@@ -235,6 +236,7 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 		dispUV.y += g_sceneCB.floorUVDisp.y;
 		sampled = CheckerboardTexture.SampleLevel(TextureSampler, dispUV, 0);
 		lightMaxing = float4(1, 1, 1, 1);
+		depth = hitPosition.z / 50.0f;
 	}
 	else if (materialIndex == STATUE_MATERIAL)
 	{
@@ -244,18 +246,22 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 		float specularPower = 20;
 		float4 specularCoefficient = pow(saturate(dot(reflectedLightRay, normalize(-WorldRayDirection()))), specularPower) * 0.5f;
 		specularColor = specularCoefficient;
+		depth = hitPosition.z;
 	}
 	else if (materialIndex == CITYSCAPE_MATERIAL)
 	{
 		sampled = CityscapeTexture.SampleLevel(TextureSampler, uv.xy, 0);
+		depth = hitPosition.z / 12.0f;
 	}
 	else if (materialIndex == TEXT_MATERIAL)
 	{
 		sampled = TextTexture.SampleLevel(TextureSampler, uv.xy, 0);
 		lightMaxing = float4(1, 1, 1, 1);
+		depth = hitPosition.z / 12.0f;
 	}
 	else
 	{
+		depth = 0;
 		payload.color = float4(1, 1, 1, 1);
 	}
 
@@ -266,7 +272,8 @@ void MyClosestHitShader(inout RayPayload payload, in MyAttributes attr)
 
 	float4 finalColor = lightColor * sampled * shadow;
 
-	payload.color = finalColor;
+	payload.color.rgb = finalColor.rgb;
+	payload.color.a = depth;
 }
 
 [shader("miss")]
