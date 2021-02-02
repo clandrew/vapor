@@ -311,7 +311,7 @@ void VaporPlus::CreateRaytracingPipelineStateObject()
     lib->SetDXILLibrary(&libdxil);
     // Define which shader exports to surface from the library.
     // If no shader exports are defined for a DXIL library subobject, all shaders will be surfaced.
-    // In this sample, this could be ommited for convenience since the sample uses all shaders in the library. 
+    // In this sample, this could be omitted for convenience since the sample uses all shaders in the library. 
     {
         lib->DefineExport(c_raygenShaderName);
         lib->DefineExport(c_closestHitShaderName);
