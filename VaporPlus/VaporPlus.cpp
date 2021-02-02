@@ -318,6 +318,11 @@ void VaporPlus::CreateRaytracingPipelineStateObject()
         lib->DefineExport(c_missShaderName);
 		lib->DefineExport(c_missShaderName_Shadow);
 		lib->DefineExport(c_hitGroupName);
+		lib->DefineExport(L"MyPipelineConfig");
+		lib->DefineExport(L"MyPipelineConfigAssociation_Raygen");
+		lib->DefineExport(L"MyPipelineConfigAssociation_ClosestHitShader");
+		lib->DefineExport(L"MyPipelineConfigAssociation_Miss");
+		lib->DefineExport(L"MyPipelineConfigAssociation_ShadowRay");
     }
     
     // Shader config
@@ -335,14 +340,6 @@ void VaporPlus::CreateRaytracingPipelineStateObject()
     // This is a root signature that is shared across all raytracing shaders invoked during a DispatchRays() call.
     auto globalRootSignature = raytracingPipeline.CreateSubobject<CD3D12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT>();
     globalRootSignature->SetRootSignature(m_raytracingGlobalRootSignature.Get());
-
-    // Pipeline config
-    // Defines the maximum TraceRay() recursion depth.
-    auto pipelineConfig = raytracingPipeline.CreateSubobject<CD3D12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT>();
-    // PERFOMANCE TIP: Set max recursion depth as low as needed 
-    // as drivers may apply optimization strategies for low recursion depths.
-    UINT maxRecursionDepth = 2; // Primary ray + shadow ray
-    pipelineConfig->Config(maxRecursionDepth);
 
 #if _DEBUG
     PrintStateObjectDesc(raytracingPipeline);

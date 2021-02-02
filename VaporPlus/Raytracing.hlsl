@@ -34,6 +34,37 @@ TriangleHitGroup MyHitGroup =
 	"MyClosestHitShader", // Closest hit shader
 };
 
+RaytracingPipelineConfig MyPipelineConfig =
+{
+	2 // max recursion depth. Primary ray + shadow ray
+    // PERFORMANCE TIP: Set max recursion depth as low as needed 
+    // as drivers may apply optimization strategies for low recursion depths.
+};
+
+SubobjectToExportsAssociation MyPipelineConfigAssociation_Raygen =
+{
+	"MyPipelineConfig",
+	"MyRaygenShader"
+};
+
+SubobjectToExportsAssociation MyPipelineConfigAssociation_ClosestHitShader =
+{
+	"MyPipelineConfig",
+	"MyClosestHitShader"
+};
+
+SubobjectToExportsAssociation MyPipelineConfigAssociation_Miss =
+{
+	"MyPipelineConfig",
+	"MyMissShader"
+};
+
+SubobjectToExportsAssociation MyPipelineConfigAssociation_ShadowRay =
+{
+	"MyPipelineConfig",
+	"MyMissShader_ShadowRay"
+};
+
 // Load three 16 bit indices from a byte addressed buffer.
 uint3 Load3x16BitIndices(uint offsetBytes)
 {
