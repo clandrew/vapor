@@ -317,7 +317,7 @@ void VaporPlus::CreateRaytracingPipelineStateObject()
         lib->DefineExport(c_closestHitShaderName);
         lib->DefineExport(c_missShaderName);
 		lib->DefineExport(c_missShaderName_Shadow);
-		lib->DefineExport(L"MyHitGroup");
+		lib->DefineExport(c_hitGroupName);
     }
     
     // Shader config
