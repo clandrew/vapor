@@ -28,6 +28,12 @@ SamplerState TextureSampler : register(s0);
 ConstantBuffer<SceneConstantBuffer> g_sceneCB : register(b0);
 ConstantBuffer<PerGeometryConstantBuffer> g_perGeometryCB : register(b1);
 
+TriangleHitGroup MyHitGroup =
+{
+	"", // Anyhit shader
+	"MyClosestHitShader", // Closest hit shader
+};
+
 // Load three 16 bit indices from a byte addressed buffer.
 uint3 Load3x16BitIndices(uint offsetBytes)
 {

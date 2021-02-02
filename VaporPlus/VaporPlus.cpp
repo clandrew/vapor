@@ -317,15 +317,8 @@ void VaporPlus::CreateRaytracingPipelineStateObject()
         lib->DefineExport(c_closestHitShaderName);
         lib->DefineExport(c_missShaderName);
 		lib->DefineExport(c_missShaderName_Shadow);
+		lib->DefineExport(L"MyHitGroup");
     }
-    
-    // Triangle hit group
-    // A hit group specifies closest hit, any hit and intersection shaders to be executed when a ray intersects the geometry's triangle/AABB.
-    // In this sample, we only use triangle geometry with a closest hit shader, so others are not set.
-    auto hitGroup = raytracingPipeline.CreateSubobject<CD3D12_HIT_GROUP_SUBOBJECT>();
-    hitGroup->SetClosestHitShaderImport(c_closestHitShaderName);
-    hitGroup->SetHitGroupExport(c_hitGroupName);
-    hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
     
     // Shader config
     // Defines the maximum sizes in bytes for the ray payload and attribute structure.
