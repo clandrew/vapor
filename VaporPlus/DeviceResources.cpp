@@ -157,6 +157,7 @@ void DeviceResources::CreateDeviceResources()
     // Determine maximum supported feature level for this device
     static const D3D_FEATURE_LEVEL s_featureLevels[] =
     {
+        D3D_FEATURE_LEVEL_12_2,
         D3D_FEATURE_LEVEL_12_1,
         D3D_FEATURE_LEVEL_12_0,
         D3D_FEATURE_LEVEL_11_1,
@@ -176,6 +177,17 @@ void DeviceResources::CreateDeviceResources()
     else
     {
         m_d3dFeatureLevel = m_d3dMinFeatureLevel;
+    }
+
+    // Check that raytracing is supported
+
+    D3D12_FEATURE_DATA_D3D12_OPTIONS5 featureSupportData = {};
+    (void)m_d3dDevice->CheckFeatureSupport(D3D12_FEATURE_D3D12_OPTIONS5, &featureSupportData, sizeof(featureSupportData));
+    bool raytracingSupported = featureSupportData.RaytracingTier != D3D12_RAYTRACING_TIER_NOT_SUPPORTED;
+
+    if (!raytracingSupported)
+    {
+        ThrowIfFailed(E_FAIL);
     }
 
     // Create the command queue.
