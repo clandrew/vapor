@@ -71,10 +71,11 @@ void DeviceResources::InitializeDXGIAdapter()
     // Enable the debug layer (requires the Graphics Tools "optional feature").
     // NOTE: Enabling the debug layer after device creation will invalidate the active device.
     {
-        ComPtr<ID3D12Debug> debugController;
+        ComPtr<ID3D12Debug1> debugController;
         if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
         {
             debugController->EnableDebugLayer();
+            debugController->SetEnableGPUBasedValidation(TRUE);
         }
         else
         {
@@ -624,7 +625,7 @@ void DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter)
         DXGI_ADAPTER_DESC1 desc;
         ThrowIfFailed(adapter->GetDesc1(&desc));
 
-        if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+        if (!(desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE))
         {
             // Don't select the Basic Render Driver adapter.
             continue;

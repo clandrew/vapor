@@ -14,6 +14,7 @@ public:
 	// Returns the descriptor index
 	UINT CreateBufferSRV(D3DBuffer* buffer, UINT numElements, UINT elementSize);
 	UINT CreateTextureUAV(ID3D12Resource* resource, UINT descriptorIndexToUse = UINT_MAX);
+	UINT CreateTextureSRV(ID3D12Resource* resource, UINT descriptorIndexToUse = UINT_MAX);
 
 	UINT AllocateDescriptor(D3D12_CPU_DESCRIPTOR_HANDLE* cpuDescriptor, UINT descriptorIndexToUse = UINT_MAX);
 	void Reset();

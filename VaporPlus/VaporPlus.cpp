@@ -377,7 +377,7 @@ void VaporPlus::CreateRaytracingOutputResource()
 	}
 	m_raytracingOutputResourceUAVGpuDescriptor = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_raytracingDescriptorHeap.GetGPUDescriptorHandleForHeapStart(), m_raytracingOutputResourceUAVDescriptorHeapIndexDuringRaytracing, m_descriptorSize);
 
-	m_postprocess.CreateRaytracedInputUAV(m_raytracingOutput.Get());
+	m_postprocess.CreateRaytracedInputSRV(m_raytracingOutput.Get());
 }
 
 void VaporPlus::CreateSampler()
@@ -590,7 +590,8 @@ void VaporPlus::BuildAccelerationStructures()
 
 	AllocateUAVBuffer(
 		device,
-		bottomLevelPrebuildInfo.UpdateScratchDataSizeInBytes, &m_updateScratchResource, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UpdateScratchResource");
+		max(topLevelPrebuildInfo.ScratchDataSizeInBytes,
+			bottomLevelPrebuildInfo.ScratchDataSizeInBytes), &m_updateScratchResource, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, L"UpdateScratchResource");
 
     {
         D3D12_RESOURCE_STATES initialResourceState;

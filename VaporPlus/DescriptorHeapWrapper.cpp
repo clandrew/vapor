@@ -65,6 +65,19 @@ UINT DescriptorHeapWrapper::CreateTextureUAV(ID3D12Resource* resource, UINT desc
 	return descriptorIndex;
 }
 
+UINT DescriptorHeapWrapper::CreateTextureSRV(ID3D12Resource* resource, UINT descriptorIndexToUse)
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+	SRVDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	SRVDesc.Texture2D.MipLevels = 1;
+	SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandleUnused;
+	UINT descriptorIndex = AllocateDescriptor(&cpuHandleUnused, descriptorIndexToUse);
+	m_device->CreateShaderResourceView(resource, &SRVDesc, m_descriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	return descriptorIndex;
+}
+
 void DescriptorHeapWrapper::Reset()
 {
 	m_descriptorHeap.Reset();

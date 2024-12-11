@@ -108,9 +108,9 @@ void Postprocess::CreateRootSignature(ID3D12Device5* device)
 	SerializeAndCreateRootSignature(device, rootSignatureDesc, &m_postprocessRootSignature);
 }
 
-void Postprocess::CreateRaytracedInputUAV(ID3D12Resource* resource)
+void Postprocess::CreateRaytracedInputSRV(ID3D12Resource* resource)
 {
-	m_raytracingOutputResourceUAVDescriptorHeapIndexDuringPostprocess = m_postprocessSRVHeap.CreateTextureUAV(resource);
+	m_raytracingOutputResourceUAVDescriptorHeapIndexDuringPostprocess = m_postprocessSRVHeap.CreateTextureSRV(resource);
 }
 
 ID3D12PipelineState* Postprocess::GetPipelineState() const

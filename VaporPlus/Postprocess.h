@@ -16,7 +16,7 @@ public:
 	void CreatePostprocessPipelineState(ID3D12Device5* device);
 	void CreatePostprocessResources(ID3D12Device5* device);
 	void CreateRootSignature(ID3D12Device5* device);
-	void CreateRaytracedInputUAV(ID3D12Resource* resource);
+	void CreateRaytracedInputSRV(ID3D12Resource* resource);
 
 	ID3D12PipelineState* GetPipelineState() const;
 	ID3D12RootSignature* GetRootSignature() const;
