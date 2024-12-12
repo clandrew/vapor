@@ -625,7 +625,7 @@ void DeviceResources::InitializeAdapter(IDXGIAdapter1** ppAdapter)
         DXGI_ADAPTER_DESC1 desc;
         ThrowIfFailed(adapter->GetDesc1(&desc));
 
-        if (!(desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE))
+        if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
         {
             // Don't select the Basic Render Driver adapter.
             continue;
