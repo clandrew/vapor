@@ -8,6 +8,11 @@ void ObjLoader::Load(wchar_t const* fileName)
 	
 	Object* currentObject = nullptr;
 
+	if (!fileStream.good())
+	{
+		ThrowIfFailed(E_FAIL); // Couldn't find the mesh file
+	}
+
 	while (fileStream.good())
 	{
 		std::getline(fileStream, line);
