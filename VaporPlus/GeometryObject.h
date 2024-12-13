@@ -52,7 +52,7 @@ public:
 		std::vector<Vertex>* floorVertices,
 		std::vector<Index>* indices);
 
-	D3D12_RAYTRACING_GEOMETRY_DESC GetRaytracingGeometryDesc(D3DBuffer* vertexBuffer, D3DBuffer* indexBuffer);
+	D3D12_RAYTRACING_GEOMETRY_DESC GetRaytracingGeometryDesc(D3DBuffer* vertexBuffer, D3DBuffer* indexBuffer, int totalVertexCount);
 
 	TextureIdentifier GetTextureIdentifier() const
 	{

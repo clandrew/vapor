@@ -491,6 +491,8 @@ void VaporPlus::BuildGeometry()
 	AllocateUploadBuffer(device, indices.data(), indexBufferSize, &m_indexBuffer.resource);
 	AllocateUploadBuffer(device, allVertices.data(), allVertices.size() * sizeof(allVertices[0]), &m_vertexBuffer.resource);
 
+	m_totalVertexCount = allVertices.size();
+
     // Vertex buffer is passed to the shader along with index buffer as a descriptor table.
     // Vertex buffer descriptor must follow index buffer descriptor in the descriptor heap.
 	UINT descriptorIndexIB = m_raytracingDescriptorHeap.CreateBufferSRV(&m_indexBuffer, CheckCastUint(indexBufferSize) / 4, 0);
@@ -505,10 +507,10 @@ void VaporPlus::UpdateBottomLevelAccelerationStructure()
 	auto commandAllocator = m_deviceResources->GetCommandAllocator();
 
 	std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> geometryDescs;
-	geometryDescs.push_back(m_floor.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer));
-	geometryDescs.push_back(m_helios.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer));
-	geometryDescs.push_back(m_cityscape.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer));
-	geometryDescs.push_back(m_text.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer));
+	geometryDescs.push_back(m_floor.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer, m_totalVertexCount));
+	geometryDescs.push_back(m_helios.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer, m_totalVertexCount));
+	geometryDescs.push_back(m_cityscape.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer, m_totalVertexCount));
+	geometryDescs.push_back(m_text.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer, m_totalVertexCount));
 
 	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC bottomLevelBuildDesc = {};
 	bottomLevelBuildDesc.Inputs.DescsLayout = D3D12_ELEMENTS_LAYOUT_ARRAY;
@@ -551,10 +553,10 @@ void VaporPlus::BuildAccelerationStructures()
     commandList->Reset(commandAllocator, nullptr);
 
 	std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> geometryDescs;
-	geometryDescs.push_back(m_floor.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer));
-	geometryDescs.push_back(m_helios.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer));
-	geometryDescs.push_back(m_cityscape.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer));
-	geometryDescs.push_back(m_text.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer));
+	geometryDescs.push_back(m_floor.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer, m_totalVertexCount));
+	geometryDescs.push_back(m_helios.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer, m_totalVertexCount));
+	geometryDescs.push_back(m_cityscape.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer, m_totalVertexCount));
+	geometryDescs.push_back(m_text.GetRaytracingGeometryDesc(&m_vertexBuffer, &m_indexBuffer, m_totalVertexCount));
 
     // Get required sizes for an acceleration structure.
     D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;

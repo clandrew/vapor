@@ -175,7 +175,7 @@ void GeometryObject::UpdateTransform(DX::DeviceResources * deviceResources, XMMA
 		D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
 }
 
-D3D12_RAYTRACING_GEOMETRY_DESC GeometryObject::GetRaytracingGeometryDesc(D3DBuffer * vertexBuffer, D3DBuffer * indexBuffer)
+D3D12_RAYTRACING_GEOMETRY_DESC GeometryObject::GetRaytracingGeometryDesc(D3DBuffer * vertexBuffer, D3DBuffer * indexBuffer, int totalVertexCount)
 {
 	D3D12_RAYTRACING_GEOMETRY_DESC geometryDesc = {};
 	geometryDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
@@ -185,7 +185,7 @@ D3D12_RAYTRACING_GEOMETRY_DESC GeometryObject::GetRaytracingGeometryDesc(D3DBuff
 	geometryDesc.Triangles.Transform3x4 = m_transformBuffer->GetGPUVirtualAddress();
 	geometryDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 	geometryDesc.Triangles.VertexBuffer.StartAddress = vertexBuffer->resource->GetGPUVirtualAddress();
-	geometryDesc.Triangles.VertexCount = CheckCastUint(m_vertexCount);
+	geometryDesc.Triangles.VertexCount = totalVertexCount;
 	geometryDesc.Triangles.VertexBuffer.StrideInBytes = sizeof(Vertex);
 
 	// Mark the geometry as opaque. 

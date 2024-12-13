@@ -110,6 +110,7 @@ private:
 
     D3DBuffer m_indexBuffer;
     D3DBuffer m_vertexBuffer;
+    int m_totalVertexCount;
 
 	GeometryObject m_floor;
 	GeometryObject m_helios;
