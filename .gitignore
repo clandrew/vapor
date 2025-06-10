@@ -7,3 +7,6 @@ VaporPlus/Debug/*
 VaporPlus/x64/*
 x64/*
 Debug/*
+
+/dxc/
+/slang-2025.10.2-windows-x86_64/
