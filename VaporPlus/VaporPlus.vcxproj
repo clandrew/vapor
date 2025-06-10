@@ -196,20 +196,36 @@ PrebuildCheck.bat</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PostprocessPS.hlsl">
+    <CustomBuild Include="PostprocessPS.slang">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.3</ShaderModel>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSMain</EntryPointName>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">g_pPostprocessPS</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompiledShaders\PostprocessPS.hlsl.h</HeaderFileOutput>
-    </FxCompile>
-    <FxCompile Include="PostprocessVS.hlsl">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)slang-2025.10.2-windows-x86_64\bin\slangc -target dxil -lang slang -dxc-path $(SolutionDir)dxc\bin\x64 -profile ps_6_3 -entry PSMain -source-embed-style u8 -source-embed-name g_pPostprocessPS -o $(ProjectDir)CompiledShaders\PostprocessPS.slang.h PostprocessPS.slang</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">slangc: Compiling %(Identity)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)slang-2025.10.2-windows-x86_64\bin\slangc -target dxil -lang slang -dxc-path $(SolutionDir)dxc\bin\x64 -profile ps_6_3 -entry PSMain -source-embed-style u8 -source-embed-name g_pPostprocessPS -o $(ProjectDir)CompiledShaders\PostprocessPS.slang.h PostprocessPS.slang</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">slangc: Compiling %(Identity)</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)CompiledShaders\PostprocessPS.slang.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)CompiledShaders\PostprocessPS.slang.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="PostprocessVS.slang">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.3</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">g_pPostprocessVS</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompiledShaders\PostprocessVS.hlsl.h</HeaderFileOutput>
-    </FxCompile>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)slang-2025.10.2-windows-x86_64\bin\slangc -target dxil -lang slang -dxc-path $(SolutionDir)dxc\bin\x64 -profile vs_6_3 -entry VSMain -source-embed-style u8 -source-embed-name g_pPostprocessVS -o $(ProjectDir)CompiledShaders\PostprocessVS.slang.h PostprocessVS.slang
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)CompiledShaders\PostprocessVS.slang.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)slang-2025.10.2-windows-x86_64\bin\slangc -target dxil -lang slang -dxc-path $(SolutionDir)dxc\bin\x64 -profile vs_6_3 -entry VSMain -source-embed-style u8 -source-embed-name g_pPostprocessVS -o $(ProjectDir)CompiledShaders\PostprocessVS.slang.h PostprocessVS.slang
+</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)CompiledShaders\PostprocessVS.slang.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">slangc: Compiling %(Identity)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">slangc: Compiling %(Identity)</Message>
+    </CustomBuild>
     <FxCompile Include="Raytracing.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Library</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6.3</ShaderModel>

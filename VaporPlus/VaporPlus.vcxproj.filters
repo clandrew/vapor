@@ -107,7 +107,9 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Raytracing.hlsl" />
-    <FxCompile Include="PostprocessPS.hlsl" />
-    <FxCompile Include="PostprocessVS.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="PostprocessVS.slang" />
+    <CustomBuild Include="PostprocessPS.slang" />
   </ItemGroup>
 </Project>

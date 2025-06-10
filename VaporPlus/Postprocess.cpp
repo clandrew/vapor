@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Postprocess.h"
-#include "CompiledShaders\PostprocessVS.hlsl.h"
-#include "CompiledShaders\PostprocessPS.hlsl.h"
+#include "CompiledShaders\PostprocessVS.slang.h"
+#include "CompiledShaders\PostprocessPS.slang.h"
 
 using namespace DirectX;
 
